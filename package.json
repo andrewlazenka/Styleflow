@@ -1,0 +1,42 @@
+{
+  "name": "csseditor",
+  "version": "0.3.0",
+  "description": "A powerful and flexible CSS editor in the browser. Built using React.",
+  "keywords": [
+    "style",
+    "editor",
+    "react",
+    "modular",
+    "hooks"
+  ],
+  "main": "build/index.cjs.js",
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
+    "@storybook/react": "^5.1.9",
+    "babel-loader": "^8.0.6",
+    "lodash.camelcase": "4.3.0",
+    "lodash.kebabcase": "4.1.1",
+    "lodash.upperfirst": "4.3.1",
+    "lodash.words": "4.2.0",
+    "prettier": "^1.18.2",
+    "prop-types": "15.7.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "rollup": "^1.16.2",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.0.0",
+    "rollup-plugin-node-resolve": "^5.0.4",
+    "rollup-plugin-peer-deps-external": "^2.2.0"
+  },
+  "peerDependencies": {
+    "react": ">= 16.8.0",
+    "react-dom": ">= 16.8.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "start": "rollup -c -w",
+    "storybook": "start-storybook"
+  }
+}
