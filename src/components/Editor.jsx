@@ -42,11 +42,19 @@ Editor.propTypes = {
   style: PropTypes.object,
 }
 
+function propertyValueFallback(propertyValue) {
+  if (typeof propertyValue === 'number') {
+    return 0
+  }
+  return undefined
+}
+
 export function useProperty(property) {
   const { casing, style, dispatchStyle } = React.useContext(EditorContext)
   const propertyName = propertyCasing(property, casing)
   const friendlyPropertyName = convertProperty(propertyName)
-  const propertyValue = style[property]
+  const propertyValue =
+    style[property] || propertyValueFallback(style[property])
   const setPropertyValue = value => dispatchStyle({ property, value })
 
   return {

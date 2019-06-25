@@ -2856,6 +2856,11 @@
 
   function splitSizeStr() {
     var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+    if (str === 'auto') {
+      return ['', 'auto'];
+    }
+
     return transformSizeValue(str).split(/(\d+)/).filter(Boolean).map(function (str) {
       return !isNaN(Number(str)) ? Number(str) : str;
     });
@@ -2944,6 +2949,15 @@
     onChange: propTypes.func,
     style: propTypes.object
   };
+
+  function propertyValueFallback(propertyValue) {
+    if (typeof propertyValue === 'number') {
+      return 0;
+    }
+
+    return undefined;
+  }
+
   function useProperty(property) {
     var _React$useContext = React.useContext(EditorContext),
         casing = _React$useContext.casing,
@@ -2952,7 +2966,7 @@
 
     var propertyName = propertyCasing(property, casing);
     var friendlyPropertyName = convertProperty(propertyName);
-    var propertyValue = style[property];
+    var propertyValue = style[property] || propertyValueFallback(style[property]);
 
     var setPropertyValue = function setPropertyValue(value) {
       return dispatchStyle({
@@ -2970,32 +2984,14 @@
   }
 
   function ColorPicker(_ref) {
-    var property = _ref.property;
-
-    var _useProperty = useProperty(property),
-        friendlyPropertyName = _useProperty.friendlyPropertyName,
-        propertyName = _useProperty.propertyName,
-        propertyValue = _useProperty.propertyValue,
-        setPropertyValue = _useProperty.setPropertyValue;
-
-    return React.createElement("div", null, React.createElement("label", {
-      htmlFor: propertyName
-    }, friendlyPropertyName), React.createElement("input", {
-      id: propertyName,
-      type: "color",
-      onChange: function onChange(_ref2) {
-        var value = _ref2.target.value;
-        setPropertyValue(value);
-      },
-      value: propertyValue
-    }));
-  }
-  ColorPicker.propTypes = {
-    property: propTypes.oneOf(['backgroundColor']).isRequired
-  };
-
-  function Dropdown(_ref) {
-    var children = _ref.children,
+    var _ref$containerClass = _ref.containerClass,
+        containerClass = _ref$containerClass === void 0 ? '' : _ref$containerClass,
+        _ref$colorInputClass = _ref.colorInputClass,
+        colorInputClass = _ref$colorInputClass === void 0 ? '' : _ref$colorInputClass,
+        _ref$textInputClass = _ref.textInputClass,
+        textInputClass = _ref$textInputClass === void 0 ? '' : _ref$textInputClass,
+        _ref$labelClass = _ref.labelClass,
+        labelClass = _ref$labelClass === void 0 ? '' : _ref$labelClass,
         property = _ref.property;
 
     var _useProperty = useProperty(property),
@@ -3004,9 +3000,65 @@
         propertyValue = _useProperty.propertyValue,
         setPropertyValue = _useProperty.setPropertyValue;
 
-    return React.createElement("div", null, React.createElement("label", {
+    return React.createElement("div", {
+      className: containerClass
+    }, React.createElement("label", {
+      className: labelClass,
+      htmlFor: propertyName
+    }, friendlyPropertyName), React.createElement("input", {
+      className: colorInputClass,
+      id: propertyName,
+      onChange: function onChange(_ref2) {
+        var value = _ref2.target.value;
+        setPropertyValue(value);
+      },
+      type: "color",
+      value: propertyValue
+    }), React.createElement("input", {
+      className: textInputClass,
+      id: propertyName,
+      onChange: function onChange(_ref3) {
+        var value = _ref3.target.value;
+        setPropertyValue(value);
+      },
+      type: "input",
+      value: propertyValue
+    }));
+  }
+  ColorPicker.propTypes = {
+    containerClass: propTypes.string,
+    colorInputClass: propTypes.string,
+    textInputClass: propTypes.string,
+    labelClass: propTypes.string,
+    property: propTypes.oneOf(['backgroundColor']).isRequired
+  };
+
+  var _Dropdown$propTypes;
+  function Dropdown(_ref) {
+    var children = _ref.children,
+        _ref$containerClass = _ref.containerClass,
+        containerClass = _ref$containerClass === void 0 ? '' : _ref$containerClass,
+        _ref$labelClass = _ref.labelClass,
+        labelClass = _ref$labelClass === void 0 ? '' : _ref$labelClass,
+        property = _ref.property,
+        _ref$optionClass = _ref.optionClass,
+        optionClass = _ref$optionClass === void 0 ? '' : _ref$optionClass,
+        _ref$selectClass = _ref.selectClass,
+        selectClass = _ref$selectClass === void 0 ? '' : _ref$selectClass;
+
+    var _useProperty = useProperty(property),
+        friendlyPropertyName = _useProperty.friendlyPropertyName,
+        propertyName = _useProperty.propertyName,
+        propertyValue = _useProperty.propertyValue,
+        setPropertyValue = _useProperty.setPropertyValue;
+
+    return React.createElement("div", {
+      className: containerClass
+    }, React.createElement("label", {
+      className: labelClass,
       htmlFor: propertyName
     }, friendlyPropertyName), React.createElement("select", {
+      className: selectClass,
       id: propertyName,
       onChange: function onChange(_ref2) {
         var value = _ref2.target.value;
@@ -3014,6 +3066,7 @@
       },
       value: propertyValue
     }, React.createElement("option", {
+      className: optionClass,
       value: ""
     }), React.Children.map(children, function (child) {
       if (child.type.name !== 'Option') {
@@ -3024,36 +3077,39 @@
       return child;
     })));
   }
-  Dropdown.propTypes = {
+  Dropdown.propTypes = (_Dropdown$propTypes = {
     casing: CaseEnum,
+    containerClass: propTypes.string,
+    labelClass: propTypes.string,
+    optionClass: propTypes.string,
     property: DropdownEnum.isRequired
-  };
+  }, _defineProperty(_Dropdown$propTypes, "optionClass", propTypes.string), _defineProperty(_Dropdown$propTypes, "selectClass", propTypes.string), _Dropdown$propTypes);
 
   function Option(_ref) {
     var _ref$convertName = _ref.convertName,
         convertName = _ref$convertName === void 0 ? true : _ref$convertName,
+        _ref$optionClass = _ref.optionClass,
+        optionClass = _ref$optionClass === void 0 ? '' : _ref$optionClass,
         value = _ref.value;
     return React.createElement("option", {
+      className: optionClass,
       value: value
     }, convertName ? convertProperty(value) : value);
   }
-
-  function calculateValue(key, value) {
-    if (key === 'ArrowUp' || key === 'ArrowDown') {
-      if (!isNaN(Number(value))) {
-        if (key === 'ArrowUp') {
-          return Number(value) + 1;
-        } else if (key === 'ArrowDown') {
-          return Number(value) - 1;
-        }
-      }
-    }
-
-    return null;
-  }
+  Option.propTypes = {
+    convertName: propTypes.bool,
+    optionClass: propTypes.string,
+    value: propTypes.string.isRequired
+  };
 
   function SizeInput(_ref) {
     var children = _ref.children,
+        _ref$containerClass = _ref.containerClass,
+        containerClass = _ref$containerClass === void 0 ? '' : _ref$containerClass,
+        _ref$inputClass = _ref.inputClass,
+        inputClass = _ref$inputClass === void 0 ? '' : _ref$inputClass,
+        _ref$labelClass = _ref.labelClass,
+        labelClass = _ref$labelClass === void 0 ? '' : _ref$labelClass,
         property = _ref.property;
 
     var _useProperty = useProperty(property),
@@ -3072,36 +3128,57 @@
           value = _ref2$value === void 0 ? sizeValue : _ref2$value,
           _ref2$unit = _ref2.unit,
           unit = _ref2$unit === void 0 ? sizeUnit : _ref2$unit;
-      setPropertyValue("".concat(Number(value)).concat(unit));
+
+      if (unit === 'auto') {
+        setPropertyValue('auto');
+      } else {
+        setPropertyValue("".concat(Number(value)).concat(unit));
+      }
     }
 
     function handleUnitChange(_ref3) {
       var unit = _ref3.target.value;
-      updateSizeValue({
-        unit: unit
-      });
-    }
 
-    function handleArrowInput(_ref4) {
-      var value = _ref4.target.value,
-          key = _ref4.key;
-      var newValue = calculateValue(key, value);
-
-      if (newValue) {
+      if (unit === 'auto') {
         updateSizeValue({
-          value: newValue
+          value: '',
+          unit: unit
+        });
+      } else {
+        updateSizeValue({
+          unit: unit
         });
       }
     }
 
-    return React.createElement("div", null, React.createElement("label", {
+    function handleInputChange(_ref4) {
+      var value = _ref4.target.value;
+
+      if (Number(value) >= 0) {
+        if (sizeUnit === 'auto') {
+          updateSizeValue({
+            value: value,
+            unit: 'px'
+          });
+        } else {
+          updateSizeValue({
+            value: value
+          });
+        }
+      }
+    }
+
+    return React.createElement("div", {
+      className: containerClass
+    }, React.createElement("label", {
+      className: labelClass,
       htmlFor: propertyName
     }, friendlyPropertyName), React.createElement("input", {
-      value: sizeValue,
+      className: inputClass,
       id: propertyName,
-      onChange: function onChange() {},
-      onKeyDown: handleArrowInput,
-      type: "number"
+      onChange: handleInputChange,
+      type: "number",
+      value: sizeUnit !== 'auto' ? sizeValue : ''
     }), React.createElement("select", {
       id: propertyName,
       onChange: handleUnitChange,
@@ -3118,11 +3195,25 @@
     })));
   }
   SizeInput.propTypes = {
+    containerClass: propTypes.string,
+    inputClass: propTypes.string,
+    labelClass: propTypes.string,
     property: propTypes.oneOf(['fontSize', 'width', 'height']).isRequired
   };
 
   function Slider(_ref) {
-    var property = _ref.property;
+    var _ref$containerClass = _ref.containerClass,
+        containerClass = _ref$containerClass === void 0 ? '' : _ref$containerClass,
+        _ref$inputClass = _ref.inputClass,
+        inputClass = _ref$inputClass === void 0 ? '' : _ref$inputClass,
+        _ref$labelClass = _ref.labelClass,
+        labelClass = _ref$labelClass === void 0 ? '' : _ref$labelClass,
+        property = _ref.property,
+        _ref$min = _ref.min,
+        min = _ref$min === void 0 ? 0 : _ref$min,
+        _ref$max = _ref.max,
+        max = _ref$max === void 0 ? 100 : _ref$max,
+        valueModifier = _ref.valueModifier;
 
     var _useProperty = useProperty(property),
         friendlyPropertyName = _useProperty.friendlyPropertyName,
@@ -3130,22 +3221,36 @@
         propertyValue = _useProperty.propertyValue,
         setPropertyValue = _useProperty.setPropertyValue;
 
-    return React.createElement("div", null, React.createElement("label", {
+    return React.createElement("div", {
+      className: containerClass
+    }, React.createElement("label", {
+      className: labelClass,
       htmlFor: propertyName
     }, friendlyPropertyName), React.createElement("input", {
+      className: inputClass,
       type: "range",
-      min: "0",
-      max: "100",
+      min: min,
+      max: max,
       id: propertyName,
       onChange: function onChange(_ref2) {
         var value = _ref2.target.value;
-        setPropertyValue(Number(value) / 100);
+
+        if (valueModifier) {
+          setPropertyValue(Number(value) / valueModifier);
+        } else {
+          setPropertyValue(Number(value));
+        }
       },
-      value: Number(propertyValue) * 100
+      value: valueModifier ? Number(propertyValue) * valueModifier : Number(propertyValue)
     }));
   }
   Slider.propTypes = {
-    property: propTypes.oneOf(['opacity']).isRequired
+    containerClass: propTypes.string,
+    inputClass: propTypes.string,
+    labelClass: propTypes.string,
+    property: propTypes.oneOf(['borderRadius', 'opacity']).isRequired,
+    min: propTypes.number,
+    max: propTypes.number
   };
 
   exports.ColorPicker = ColorPicker;

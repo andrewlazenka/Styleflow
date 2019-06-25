@@ -28,6 +28,9 @@ function transformSizeValue(val) {
 }
 
 function splitSizeStr(str = '') {
+  if (str === 'auto') {
+    return ['', 'auto']
+  }
   return transformSizeValue(str)
     .split(/(\d+)/)
     .filter(Boolean)

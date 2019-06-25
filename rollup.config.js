@@ -3,6 +3,8 @@ import commonjs from 'rollup-plugin-commonjs'
 import resolve from 'rollup-plugin-node-resolve'
 import external from 'rollup-plugin-peer-deps-external'
 
+const resolveExtensions = ['.js', '.jsx', '.json']
+
 const config = {
   input: 'src/index.js',
   output: [
@@ -41,14 +43,16 @@ const config = {
     babel({
       babelrc: false,
       exclude: 'node_modules/**',
-      extensions: ['.js', '.jsx', '.json'],
+      extensions: resolveExtensions,
       presets: [
         ['@babel/preset-env', { modules: false }],
         '@babel/preset-react',
       ],
     }),
     commonjs({ include: /node_modules/ }),
-    resolve(),
+    resolve({
+      extensions: resolveExtensions,
+    }),
   ],
 }
 

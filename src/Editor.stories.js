@@ -5,7 +5,7 @@ import CSSEditor, {
   Option,
   SizeInput,
   Slider,
-} from '../build/index.cjs'
+} from './index.js'
 import { storiesOf } from '@storybook/react';
 
 function App() {
@@ -14,10 +14,20 @@ function App() {
     flexDirection: 'row',
     justifyContent: 'space-around',
     fontSize: 18,
+    width: 'auto',
+    backgroundColor: '#685d86',
+    borderRadius: 6
   })
   return (
     <div>
       <CSSEditor style={style} onChange={newStyle => setStyle(newStyle)}>
+        <Dropdown property="position">
+          <Option value="static" />
+          <Option value="relative" />
+          <Option value="absolute" />
+          <Option value="fixed" />
+          <Option value="sticky" />
+        </Dropdown>
         <Dropdown property="display">
           <Option value="block" />
           <Option value="inline" />
@@ -51,8 +61,15 @@ function App() {
           <Option value="em" />
           <Option value="rem" />
         </SizeInput>
+        <SizeInput property="width">
+          <Option value="px" />
+          <Option value="%" />
+          <Option value="em" />
+          <Option value="auto" />
+        </SizeInput>
         <ColorPicker property="backgroundColor" />
-        <Slider property="opacity" />
+        <Slider property="opacity" valueModifier={100} />
+        <Slider property="borderRadius" max={50} />
       </CSSEditor>
       <div style={style}>
         <div>One</div>
